@@ -1,6 +1,6 @@
 // 画面のファイルをスマホに保存しておき、電波が弱い店内でもすぐ開けるようにする。
 // ファイルを更新したら CACHE の番号を上げること（上げないと古い画面が出続ける）。
-var CACHE = 'karaoke-v2';
+var CACHE = 'karaoke-v3';
 var ASSETS = [
   './',
   'index.html',
@@ -16,7 +16,10 @@ var ASSETS = [
 ];
 
 self.addEventListener('install', function (event) {
-  event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(ASSETS); }));
+  // ブラウザ側の一時保存（最大10分）を通さず、必ずサーバーから最新版を取る
+  event.waitUntil(caches.open(CACHE).then(function (cache) {
+    return cache.addAll(ASSETS.map(function (url) { return new Request(url, { cache: 'reload' }); }));
+  }));
   self.skipWaiting();
 });
 
@@ -36,7 +39,8 @@ self.addEventListener('fetch', function (event) {
   event.respondWith(
     caches.open(CACHE).then(function (cache) {
       return cache.match(req, { ignoreSearch: true }).then(function (hit) {
-        var fresh = fetch(req).then(function (res) {
+        // 'no-cache' = サーバーに「変わった？」を毎回確かめる（変わっていなければ通信はごく小さい）
+        var fresh = fetch(new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' })).then(function (res) {
           if (res && res.ok) cache.put(req, res.clone());
           return res;
         }).catch(function () { return hit; });
