@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#F5F3FF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="カラオケ">
+<title>カラオケリスト</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <h1 class="topbar-title">カラオケリスト</h1>
+    <button type="button" id="syncStatus" class="sync-status"></button>
+  </header>
+
+  <button type="button" id="loginBand" class="login-band" hidden></button>
+
+  <main id="list" class="list" aria-live="polite"></main>
+
+  <div class="bottombar" id="bottombar">
+    <label class="search">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="曲名・歌手で探す" enterkeyhint="search" autocomplete="off" aria-label="曲名・歌手で探す">
+      <button type="button" id="clearQ" class="search-clear" aria-label="入力を消す" hidden>×</button>
+    </label>
+    <button type="button" id="addBtn" class="fab" aria-label="曲を追加">＋</button>
+  </div>
+</div>
+
+<!-- 追加・編集シート -->
+<div class="overlay" id="sheet" hidden>
+  <form class="sheet" id="sheetForm" novalidate>
+    <p class="sheet-title" id="sheetTitle">曲を追加</p>
+
+    <label class="field">
+      <span class="field-label">曲名</span>
+      <input type="text" id="fTitle" autocomplete="off">
+    </label>
+
+    <label class="field">
+      <span class="field-label">歌手</span>
+      <input type="text" id="fSinger" autocomplete="off">
+    </label>
+    <div class="singer-chips" id="singerChips"></div>
+
+    <label class="field" id="furiganaField" hidden>
+      <span class="field-label" id="furiganaLabel">フリガナ（並び順に使います）</span>
+      <input type="text" id="fFurigana" autocomplete="off" placeholder="カタカナ">
+    </label>
+
+    <div class="field">
+      <span class="field-label">キー</span>
+      <div class="stepper">
+        <button type="button" class="step step-down" data-step="-1" aria-label="キーを下げる"></button>
+        <span class="step-value" id="fKey">±0</span>
+        <button type="button" class="step step-up" data-step="1" aria-label="キーを上げる"></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">ジャンル（なくてもOK）</span>
+      <div class="genre-chips" id="genreChips"></div>
+    </div>
+
+    <label class="check" id="sungTodayRow">
+      <input type="checkbox" id="fSungToday" checked>
+      <span>今日歌った曲として記録する</span>
+    </label>
+
+    <label class="field" id="lastSungRow" hidden>
+      <span class="field-label">最後に歌った日</span>
+      <input type="date" id="fLastSung">
+    </label>
+
+    <p class="form-error" id="formError" hidden></p>
+
+    <div class="sheet-actions">
+      <button type="button" class="btn-secondary" id="sheetCancel">キャンセル</button>
+      <button type="submit" class="btn-primary" id="sheetSubmit">追加する</button>
+    </div>
+    <button type="button" class="btn-link" id="sheetContinue">追加して、同じ歌手で続けて入力</button>
+  </form>
+</div>
+
+<!-- ログイン -->
+<div class="overlay overlay-center" id="loginModal" hidden>
+  <form class="dialog" id="loginForm" novalidate>
+    <p class="sheet-title">ログイン</p>
+    <p class="dialog-text">スプレッドシートに保存するためのパスワードを入力してください。この端末では次回から入力不要です。</p>
+    <label class="field">
+      <span class="field-label">パスワード</span>
+      <input type="password" id="loginPassword" autocomplete="current-password">
+    </label>
+    <p class="form-error" id="loginError" hidden></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn-secondary" id="loginCancel">あとで</button>
+      <button type="submit" class="btn-primary" id="loginSubmit">ログイン</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden>
+  <span id="toastText"></span>
+  <button type="button" id="toastAction" hidden>取り消す</button>
+</div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
