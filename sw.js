@@ -1,6 +1,6 @@
 // 画面のファイルをスマホに保存しておき、電波が弱い店内でもすぐ開けるようにする。
 // ファイルを更新したら CACHE の番号を上げること（上げないと古い画面が出続ける）。
-var CACHE = 'karaoke-v1';
+var CACHE = 'karaoke-v2';
 var ASSETS = [
   './',
   'index.html',
